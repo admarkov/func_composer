@@ -12,7 +12,7 @@ using namespace std;
 
 typedef unsigned int index;
 
-/*struct token {
+struct token {
     enum token_type {constant, variable, plus, minus, mult, div, power, opening_bracket, closing_bracket, trig};
     string name;
     token_type type;
@@ -23,7 +23,7 @@ typedef unsigned int index;
     token(token_type t, string n) : type(t), name(n) {
         if (type!=variable) crash();
     }
-};/*
+};
 
 class token_stream {
     vector<token> stream;
