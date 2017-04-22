@@ -6,10 +6,12 @@
 #define FUNC_COMPOSER_FRAME_H
 
 #include <string>
+using namespace std;
+
 typedef unsigned int index;
 
-void crash(char info[]="") {
-    puts("Fatal error.");
+void crash(string info="No information.") {
+    puts("Fatal error: "+info);
     exit(0);
 }
 
