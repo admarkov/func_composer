@@ -1,6 +1,5 @@
 #include <iostream>
 #include <string>
-#include "ftree.h"
 
 #define INPUT_FILE "sample1"
 

@@ -8,20 +8,27 @@
 #include "frame.h"
 #include <string>
 #include <vector>
+#include <map>
 using namespace std;
 
 typedef unsigned int index;
 
-struct token {
-    enum token_type {constant, variable, plus, minus, mult, div, power, opening_bracket, closing_bracket, trig};
-    string name;
+class token {
+    enum token_type {constant, variable, plus, minus, mult, div, power, trig};
+    map<token_type, unsigned short> priorities;
+public:
+    string varname;
     token_type type;
     int priority() {
-
+        return priorities[type];
+    }
+    void initPriorities() {
+        priorities[constant] =
     }
     token(token_type t) : type(t) {};
-    token(token_type t, string n) : type(t), name(n) {
+    token(token_type t, string n) : type(t), varname(n) {
         if (type!=variable) crash();
+        initPriorities();
     }
 };
 
