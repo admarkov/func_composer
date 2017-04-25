@@ -6,13 +6,14 @@
 #define FUNC_COMPOSER_FTREE_H
 
 #include <string>
+#include "tokens.h"
 
-struct node {
-    node *parent, *left, *right;
+struct Node {
+    Node *parent, *left, *right;
     std::string data;
-    node(node* p = nullptr, std::string d="", node* l = nullptr, node* r = nullptr) : parent(p), data(d), left(l), right(r) {}
-    virtual node* clone(node* p = nullptr) {
-        node *n = new node (p, data, nullptr, nullptr);
+    Node(Node* p = nullptr, std::string d="", Node* l = nullptr, Node* r = nullptr) : parent(p), data(d), left(l), right(r) {}
+    virtual Node* clone(Node* p = nullptr) {
+        Node *n = new Node (p, data, nullptr, nullptr);
         n->left = left->clone(n);
         n->right = right->clone(n);
         return n;
@@ -23,15 +24,15 @@ struct node {
         delete left;
         delete right;
     }
-    ~node() {
+    ~Node() {
         del();
     }
 };
 
-struct var : node {
+struct var : Node {
     std::string name;
-    node *root;
-    var(std::string n, node* r, node* p = nullptr) : name(n), root(r), node(p) {}
+    Node *root;
+    var(std::string n, Node* r, Node* p = nullptr) : name(n), root(r), Node(p) {}
 };
 
 #endif //FUNC_COMPOSER_FTREE_H
