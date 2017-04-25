@@ -5,75 +5,88 @@
 #ifndef FUNC_COMPOSER_LEXICAL_ANALYZER_H
 #define FUNC_COMPOSER_LEXICAL_ANALYZER_H
 
-#include "frame.h"
 #include <string>
-#include <vector>
-#include <map>
+#include <deque>
 using namespace std;
 
-typedef unsigned int index;
-
-class token {
-    enum token_type {constant, variable, plus, minus, mult, div, power, trig};
-    map<token_type, unsigned short> priorities;
+class Token {
 public:
-    string varname;
-    token_type type;
+    string type;
+    string data;
+
+    Token(string t="", string d="") : type(t), data(d) {}
+
     int priority() {
-        return priorities[type];
-    }
-    void initPriorities() {
-        priorities[constant] =
-    }
-    token(token_type t) : type(t) {};
-    token(token_type t, string n) : type(t), varname(n) {
-        if (type!=variable) crash();
-        initPriorities();
+        if (data=="+" || data=="-") return 3;
+        else if (data=="*" || data=="/") return 2;
+        else if (data=="^") return 1;
+        else return 0;
     }
 };
 
-class token_stream {
-    vector<token> stream;
-    bool indexCorrect(index i) {
-        if (i>=1 && i<=size()) return true;
-        else return false;
-    }
+class TokenStream {
+    deque<Token> tokens;
 public:
     size_t size() {
-        return stream.size();
+        return tokens.size();
     }
-    void push(token t) {
-        stream.push_back(t);
+    Token get(int i) {
+        return tokens[i-1];
     }
-    token get(index i)
-    {
-        if (!indexCorrect(i)) crash();
-        else return stream[i-1];
+    void push(Token t) {
+        tokens.push_back(t);
     }
-    token_stream() {}
-    token_stream leftsplit(int pos) {
-        token_stream res;
+    TokenStream(string s) {
+        //TODO: Lexical analyzer
+    }
+    TokenStream() {
+
+    }
+    int findInflection() {
+        int res=-1;
+        int p=5;
+        int brackets=0;
+        for (int i=1; i<=size(); i++) {
+            Token t = tokens[i];
+            if (t.data=="(") brackets++;
+            else if (t.data==")") brackets--;
+            else if (brackets==0 && t.type=="operator" && (t.priority()<p || t.priority()==1 && p==1)) {
+                res=i;
+            }
+        }
+        return res;
+    }
+
+    TokenStream leftSplit(int pos) {
+        TokenStream res;
         for (int i=1; i<pos; i++) res.push(get(i));
         return res;
     }
-    token_stream rightsplit(int pos) {
-        token_stream res;
+
+    TokenStream rightSplit(int pos) {
+        TokenStream res;
         pos++;
         while (pos<=size()) res.push(get(pos));
         return res;
     }
-    index get_inflection() {
-        index res=1;
-        for (index i=1; i<=size(); i++) {
-            if (get(i).priority()<get(res).priority()) res=i;
-        }
-        return res;
+
+    bool split(Token &t, TokenStream &left, TokenStream &right) {
+        int inflection = findInflection();
+        if (inflection==-1) return false;
+        t = get(inflection);
+        left=leftSplit(inflection);
+        right=rightSplit(inflection);
+        return true;
     }
-    void split(token &inflection, token_stream &l, token_stream &r) {
-        index inf_index = get_inflection();
-        inflection = get(inf_index);
-        l = leftsplit(inf_index);
-        r = rightsplit(inf_index);
+
+    void breakBrackets() {
+        if (get(1).data!="(") tokens.pop_front();
+        tokens.pop_front();
+        tokens.pop_back();
+    }
+
+    ~TokenStream() {
+
     }
 };
 
