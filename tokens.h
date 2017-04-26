@@ -58,13 +58,13 @@ public:
         refactor(s);
         int pos = 0;
         while (pos<s.length()) {
-            if (s[pos]=='+') push(Token("operator", "+"));
-            if (s[pos]=='-') push(Token("operator", "-"));
-            if (s[pos]=='*') push(Token("operator", "*"));
-            if (s[pos]=='/') push(Token("operator", "/"));
-            if (s[pos]=='^') push(Token("operator", "^"));
-            if (s[pos]=='(') push(Token("function", "("));
-            if (s[pos]==')') push(Token("function", ")"));
+            if (s[pos]=='+') push(Token("operator", "+")), pos++;
+            if (s[pos]=='-') push(Token("operator", "-")), pos++;
+            if (s[pos]=='*') push(Token("operator", "*")), pos++;
+            if (s[pos]=='/') push(Token("operator", "/")), pos++;
+            if (s[pos]=='^') push(Token("operator", "^")), pos++;
+            if (s[pos]=='(') push(Token("function", "(")), pos++;
+            if (s[pos]==')') push(Token("function", ")")), pos++;
             if (isdigit(s[pos])) {
                 string c="";
                 while (pos<s.length() && isdigit(s[pos])) {
