@@ -79,7 +79,7 @@ public:
                     x+=s[pos];
                     pos++;
                 }
-                if (pos<s.length()-1 && s[pos+1]=='(') {
+                if (pos<s.length() && s[pos]=='(') {
                     push(Token("function", x));
                 }
                 else {
