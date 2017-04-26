@@ -94,14 +94,15 @@ public:
     }
     int findInflection() {
         int res=-1;
-        int p=5;
+        int p=0;
         int brackets=0;
         for (int i=1; i<=size(); i++) {
-            Token t = tokens[i];
+            Token t = get(i);
             if (t.data=="(") brackets++;
             else if (t.data==")") brackets--;
-            else if (brackets==0 && t.type=="operator" && (t.priority()<p || t.priority()==1 && p==1)) {
+            else if (brackets==0 && t.type=="operator" && (t.priority()>p || t.priority()==1 && p==1)) {
                 res=i;
+                p=t.priority();
             }
         }
         return res;
@@ -116,7 +117,7 @@ public:
     TokenStream rightSplit(int pos) {
         TokenStream res;
         pos++;
-        while (pos<=size()) res.push(get(pos));
+        while (pos<=size()) res.push(get(pos)), pos++;
         return res;
     }
 
@@ -142,7 +143,7 @@ public:
             cout<<", ";
         }
         get(size()).print();
-        cout<<"}";
+        cout<<"}"<<endl;
     }
 
     TokenStream* operator=(TokenStream b) {
