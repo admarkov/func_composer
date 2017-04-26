@@ -8,6 +8,7 @@
 #include <iostream>
 #include <string>
 #include <deque>
+#include <vector>
 using namespace std;
 
 class Token {
@@ -45,9 +46,49 @@ public:
     void push(Token t) {
         tokens.push_back(t);
     }
-    TokenStream(string s) {
-        //TODO: Lexical analyzer
+
+    void refactor(string &s) {
+        for (int i=0; i<s.length(); i++) {
+            if (s[i]==' ' || s[i]=='    ') s.erase(i,1);
+//            if (s[i]>='A' && s[i]<='Z') s[i]-=('A'-'a');
+        }
     }
+
+    TokenStream(string s) {
+        refactor(s);
+        int pos = 0;
+        while (pos<s.length()) {
+            if (s[pos]=='+') push(Token("operator", "+"));
+            if (s[pos]=='-') push(Token("operator", "-"));
+            if (s[pos]=='*') push(Token("operator", "*"));
+            if (s[pos]=='/') push(Token("operator", "/"));
+            if (s[pos]=='^') push(Token("operator", "^"));
+            if (s[pos]=='(') push(Token("function", "("));
+            if (s[pos]==')') push(Token("function", ")"));
+            if (isdigit(s[pos])) {
+                string c="";
+                while (pos<s.length() && isdigit(s[pos])) {
+                    c+=s[pos];
+                    pos++;
+                }
+                push(Token("constant", c));
+            }
+            else if (isalpha(s[pos])) {
+                string x="";
+                while (pos<s.length() && isalpha(s[pos])) {
+                    x+=s[pos];
+                    pos++;
+                }
+                if (pos<s.length()-1 && s[pos+1]=='(') {
+                    push(Token("function", x));
+                }
+                else {
+                    push(Token("variable", x));
+                }
+            }
+        }
+    }
+
     TokenStream() {
 
     }
