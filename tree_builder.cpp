@@ -10,7 +10,7 @@ Node* buildAST(TokenStream stream, Node* root = nullptr, Node* p = nullptr) {
         TokenStream left, right;
         Token inflection;
         stream.split(inflection,left,right);
-        Node* n = new Node(p, inflection.data, nullptr, nullptr);
+        Node* n = new Node(p, root, "operator", inflection.data, nullptr, nullptr);
         if (root==nullptr) root=n;
         n->left=buildAST(left, root, n);
         n->right=buildAST(right, root, n);
@@ -20,19 +20,19 @@ Node* buildAST(TokenStream stream, Node* root = nullptr, Node* p = nullptr) {
         Token t = stream.get(1);
         if (t.data!="(") {
             if (t.type=="function") {
-                Node *n = new Node(p, t.data, nullptr, nullptr);
+                Node *n = new Node(p, root, t.type, t.data, nullptr, nullptr);
                 if (root == nullptr) root = n;
                 stream.breakBrackets();
                 n->left=buildAST(stream, root, n);
                 return n;
             }
             if (t.type=="constant") {
-                Node *n = new Node(p, t.data, nullptr, nullptr);
+                Node *n = new Node(p, root, t.type, t.data, nullptr, nullptr);
                 if (root == nullptr) root = n;
                 return n;
             }
             if (t.type=="variable") {
-                var *n = new var(t.data, root, p);
+                Node *n = new Node(p, root, t.type, t.data, nullptr, nullptr);
                 if (n->root==nullptr) n->root=n;
                 return (Node*)n;
             }
