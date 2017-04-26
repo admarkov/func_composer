@@ -16,8 +16,8 @@ struct Node {
     Node(Node* p = nullptr, Node* rt=nullptr, string t="", std::string d="", Node* l = nullptr, Node* r = nullptr) : parent(p), type(t), root(rt), data(d), left(l), right(r) {}
     Node* clone(Node* r, Node* p = nullptr) {
         Node *n = new Node (p, r, type, data, nullptr, nullptr);
-        if (left!=nullptr) n->left = left->clone(n);
-        if (right!=nullptr) n->right = right->clone(n);
+        if (left!=nullptr) n->left = left->clone(r,n);
+        if (right!=nullptr) n->right = right->clone(r,n);
         return n;
     }
     void del () {
@@ -36,18 +36,19 @@ struct Node {
         print(r->left, offset+3);
     }
 
-    Node* setvar(Node* root, Node *val, string varname, Node* p) {
-        if (type=="variable") {
-            if (data==varname && root==root) {
-                Node* n = clone(val);
-                n->parent = p;
-                return n;
+    void setvar(Node* Root, Node *val, string varname) {
+        if (left!=nullptr) {
+            if (left->type=="variable") {
+                if (left->data==varname && left->root==Root)
+                    left = val->clone(Root, this);
             }
+            else left->setvar(Root, val, varname);
         }
-        else {
-            if (left!=nullptr) left->setvar(root, val, varname, this);
-            if (right!=nullptr) right->setvar(root, val, varname, this);
-            return this;
+        if (right!=nullptr) {
+            if (right->type=="variable") {
+                if (right->data==varname && left->root==Root) right = val->clone(Root, this);
+            }
+            right->setvar(Root, val, varname);
         }
     }
 
