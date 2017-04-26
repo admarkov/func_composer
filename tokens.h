@@ -5,6 +5,7 @@
 #ifndef FUNC_COMPOSER_LEXICAL_ANALYZER_H
 #define FUNC_COMPOSER_LEXICAL_ANALYZER_H
 
+#include <iostream>
 #include <string>
 #include <deque>
 using namespace std;
@@ -16,11 +17,19 @@ public:
 
     Token(string t="", string d="") : type(t), data(d) {}
 
+    Token* operator=(Token b) {
+        type=b.type;
+        data=b.data;
+    }
+
     int priority() {
         if (data=="+" || data=="-") return 3;
         else if (data=="*" || data=="/") return 2;
         else if (data=="^") return 1;
         else return 0;
+    }
+    void print() {
+        cout<<"["<<type<<": "<<data<<"]";
     }
 };
 
@@ -83,6 +92,21 @@ public:
         if (get(1).data!="(") tokens.pop_front();
         tokens.pop_front();
         tokens.pop_back();
+    }
+
+    void print() {
+        cout<<"{";
+        for (int i=1; i<size(); i++) {
+            get(i).print();
+            cout<<", ";
+        }
+        get(size()).print();
+        cout<<"}";
+    }
+
+    TokenStream* operator=(TokenStream b) {
+        while (!tokens.empty()) tokens.pop_back();
+        for (int i=1; i<=b.size(); i++) push(b.get(i));
     }
 
     ~TokenStream() {
