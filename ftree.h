@@ -43,4 +43,9 @@ public:
             cout<<name;
         }
     }
+    ~fNode() {
+        for (fNode* f: vallist) {
+            delete f;
+        }
+    }
 };
