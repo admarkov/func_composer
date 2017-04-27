@@ -59,6 +59,7 @@ public:
     ~linkedList() {
         delete root;
         delete leaf;
+        delete pos;
     }
 };
 
