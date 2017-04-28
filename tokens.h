@@ -29,8 +29,11 @@ public:
         else if (data=="^") return 1;
         else return 0;
     }
+    string str() {
+        return "["+type+": "+data+"]";
+    }
     void print() {
-        cout<<"["<<type<<": "<<data<<"]";
+        cout<<str();
     }
 };
 
@@ -135,15 +138,18 @@ public:
         tokens.pop_front();
         tokens.pop_back();
     }
-
-    void print() {
-        cout<<"{";
+    string str() {
+        string res="{";
         for (int i=1; i<size(); i++) {
-            get(i).print();
-            cout<<", ";
+            res+=get(i).str();
+            res+=", ";
         }
-        get(size()).print();
-        cout<<"}"<<endl;
+        res+=get(size()).str();
+        res+="}";
+        return res;
+    }
+    void print() {
+        cout<<str();
     }
 
     TokenStream* operator=(TokenStream b) {
