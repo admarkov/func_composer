@@ -12,7 +12,16 @@ using namespace std;
 struct verdict {
     enum result {fail, ok} res;
     string msg="";
-    verdict(result r, string s="") : res(r), msg(s) {};
+    verdict(result r, string s="") : res(r), msg(s) {}
+    verdict operator+(verdict b) {
+        if (res==fail || b.res==fail) return verdict(fail);
+        else return verdict(ok);
+    }
+    verdict* operator+=(verdict b) {
+        if (res==fail || b.res==fail) res=fail;
+        else res=ok;
+        return this;
+    }
 };
 
 
@@ -46,6 +55,10 @@ verdict token_stream_building_4() {
     string answer = "{[function: sin], [function: (], [constant: 239], [operator: ^], [function: (], [constant: 5], [operator: +], [variable: t], [function: )], [operator: ^], [variable: x], [operator: *], [constant: 8], [operator: *], [function: cos], [function: (], [variable: x], [function: )], [operator: +], [constant: 25], [operator: *], [function: ln], [function: (], [variable: e], [operator: +], [constant: 8], [operator: -], [function: sin], [function: (], [variable: x], [operator: +], [constant: 9], [function: )], [operator: *], [function: cos], [function: (], [variable: y], [operator: *], [constant: 8], [operator: *], [variable: x], [function: )], [function: )], [function: )]}";
     if (output!=answer) return verdict(verdict::fail);
     else return verdict(verdict::ok);
+}
+
+verdict token_stream_building() {
+    return token_stream_building_1()+token_stream_building_2()+token_stream_building_3()+token_stream_building_4();
 }
 
 verdict ts_findinflection_1() {
@@ -96,6 +109,16 @@ verdict ts_findinflection_6() {
     else return verdict(verdict::ok);
 }
 
+verdict ts_find_inflection() {
+    verdict res = ts_findinflection_1();
+    res+=ts_findinflection_2();
+    res+=ts_findinflection_3();
+    res+=ts_findinflection_4();
+    res+=ts_findinflection_5();
+    res+=ts_findinflection_6();
+    return res;
+}
+
 verdict ts_split_1() {
     TokenStream l, r;
     Token m;
@@ -132,6 +155,13 @@ verdict ts_split_3() {
     else return verdict(verdict::fail);
 }
 
+verdict ts_split() {
+    verdict res = ts_split_1();
+    res+=ts_split_2();
+    res+=ts_split_3();
+    return res;
+}
+
 verdict ts_break_brackets_1() {
     TokenStream input("(239^(5+t)^x*8*cos(x)+25*ln(e+8-sin(x+9)*cos(y*8*x))+5)");
     input.breakBrackets();
@@ -159,6 +189,14 @@ verdict ts_break_brackets_3() {
     else return verdict(verdict::ok);
 }
 
+verdict ts_break_brackets() {
+    verdict res = ts_break_brackets_1();
+    res+= ts_break_brackets_2();
+    res+=ts_break_brackets_3();
+    return res;
+}
+
+
 verdict __test(string name, verdict(*f)()) {
     cout<<name<<": ";
     verdict res = f();
@@ -170,22 +208,10 @@ verdict __test(string name, verdict(*f)()) {
 }
 
 void testTokenStream() {
-    __test("TokenStream.constructor #1", token_stream_building_1);
-    __test("TokenStream.constructor #2", token_stream_building_2);
-    __test("TokenStream.constructor #3", token_stream_building_3);
-    __test("TokenStream.constructor #4", token_stream_building_4);
-    __test("TokenStream.findInflection #1", ts_findinflection_1);
-    __test("TokenStream.findInflection #2", ts_findinflection_2);
-    __test("TokenStream.findInflection #3", ts_findinflection_3);
-    __test("TokenStream.findInflection #4", ts_findinflection_4);
-    __test("TokenStream.findInflection #5", ts_findinflection_5);
-    __test("TokenStream.findInflection #6", ts_findinflection_6);
-    __test("TokenStream.split #1", ts_split_1);
-    __test("TokenStream.split #2", ts_split_2);
-    __test("TokenStream.split #3", ts_split_3);
-    __test("TokenStream.breakBrackets #1", ts_break_brackets_1);
-    __test("TokenStream.breakBrackets #2", ts_break_brackets_2);
-    __test("TokenStream.breakBrackets #3", ts_break_brackets_3);
+    __test("TokenStream.constructor", token_stream_building);
+    __test("TokenStream.findInflection", ts_find_inflection);
+    __test("TokenStream.split", ts_split);
+    __test("TokenStream.breakBrackets", ts_break_brackets);
 }
 
 void test() {
