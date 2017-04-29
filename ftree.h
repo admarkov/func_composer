@@ -27,6 +27,10 @@ public:
         }
     }
 
+    fNode* clone() {
+        return new fNode(this);
+    }
+
     void setvar(string var, fNode* f) {
         int i=0;
         while (varlist[i]!=var) i++;

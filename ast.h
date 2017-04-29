@@ -14,12 +14,14 @@ struct Node {
     string type;
     std::string data;
     Node(Node* p = nullptr, Node* rt=nullptr, string t="", std::string d="", Node* l = nullptr, Node* r = nullptr) : parent(p), type(t), root(rt), data(d), left(l), right(r) {}
-    Node* clone(Node* r, Node* p = nullptr) {
+    Node* clone(Node* r=nullptr, Node* p = nullptr) {
         Node *n = new Node (p, r, type, data, nullptr, nullptr);
+        if (n->root==nullptr) n->root = n;
         if (left!=nullptr) n->left = left->clone(r,n);
         if (right!=nullptr) n->right = right->clone(r,n);
         return n;
     }
+    Node (string c) : type("constant"), data(c) {}
     void del () {
         if (left!=nullptr) left->del();
         if (right!=nullptr) right->del();

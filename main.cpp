@@ -17,7 +17,7 @@ int main ()
     fstream output("output");
     string e;
     getline(input, e);
-    ast e_tree = buildAST(TokenStream(e));
+    ast Expr = buildAST(TokenStream(e));
     list<ast> fTreesList;
     list<functionTree> fList;
     map<ast, string> fname;
@@ -38,5 +38,25 @@ int main ()
         while (pos<s.length()) expr+=s[pos], pos++;
         fTreesList.push_back(buildAST(TokenStream(expr)));
     }
-    
+    list<ast> statesTrees;
+    list<functionTree> statesFunctions;
+
+    list<functionTree>::iterator f=fList.begin();
+    list<ast>::iterator ftree=fTreesList.begin();
+    for (; f!=fList.end(); f++, ftree++) {
+        auto F = (*ftree);
+        if (F->type=="variable" && (Expr->type=="variable" || Expr->type=="constant")) {
+            statesTrees.push_back(F->clone());
+            statesFunctions.push_back((*f)->clone());
+            statesTrees.back()->setvar(statesTrees.back(), new Node(Expr->data), F->data);
+            statesFunctions.back()->setvar(F->data, new fNode("constant", Expr->data));
+        }
+        else {
+            if (F->type==Expr->type && F->data==Expr->data) {
+                statesTrees.push_back(F->clone());
+                statesFunctions.push_back((*f)->clone());
+            }
+        }
+    }
+
 }
