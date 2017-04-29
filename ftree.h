@@ -8,16 +8,17 @@
 using namespace std;
 
 class fNode {
-    void push_var(string var) {
-        varlist.push_back(var);
-        vallist.push_back(nullptr);
-    }
 public:
     string type;
     string name;
     vector<string> varlist;
     vector<fNode*> vallist;
     fNode() {}
+    fNode(string t, string n): type(t), name(n) {};
+    void push_var(string var) {
+        varlist.push_back(var);
+        vallist.push_back(nullptr);
+    }
     fNode(fNode* f) {
         type=f->type;
         name=f->name;
@@ -25,6 +26,7 @@ public:
             push_var(v);
         }
     }
+
     void setvar(string var, fNode* f) {
         int i=0;
         while (varlist[i]!=var) i++;
@@ -49,3 +51,5 @@ public:
         }
     }
 };
+
+typedef fNode* functionTree;

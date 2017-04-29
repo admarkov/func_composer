@@ -57,4 +57,6 @@ struct Node {
     }
 };
 
+typedef Node* ast;
+
 #endif //FUNC_COMPOSER_FTREE_H
