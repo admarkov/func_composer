@@ -54,6 +54,19 @@ struct Node {
         }
     }
 
+    static bool equal(Node* a, Node* b) {
+        if (a->type!=b->type) return false;
+        if (a->data!=b->data) return false;
+        if (a->left==nullptr && b->left!=nullptr) return false;
+        if (a->left!=nullptr && b->left==nullptr) return false;
+        if (a->right==nullptr && b->right!=nullptr) return false;
+        if (a->right!=nullptr && b->right==nullptr) return false;
+        bool res=1;
+        if (a->left!=nullptr) res*=equal(a->left, b->left);
+        if (res && a->right!=nullptr) res*=equal(a->right, b->right);
+        return res;
+    }
+
     ~Node() {
         del();
     }
