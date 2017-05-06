@@ -21,6 +21,7 @@ public:
     Token* operator=(Token b) {
         type=b.type;
         data=b.data;
+        return this;
     }
 
     int priority() {
@@ -155,6 +156,7 @@ public:
     TokenStream* operator=(TokenStream b) {
         while (!tokens.empty()) tokens.pop_back();
         for (int i=1; i<=b.size(); i++) push(b.get(i));
+        return this;
     }
 
     ~TokenStream() {
