@@ -1,0 +1,7 @@
+sin(5+2+3)
+sum(x,y)=x+y
+g(x)=5+2
+G(x)=3
+sin(x)=sin(x)
+sumsin(x,y)=sin(x+y)
+f(x,y)=5*y+x
