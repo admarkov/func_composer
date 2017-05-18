@@ -8,4 +8,5 @@ map<ast, ast> NodeToItsCopy;
 map<ast, ast> CopyToClonedNode;
 map<ast, functionTree> RootToFunction;
 map<functionTree, ast> FunctionToRoot;
-map<ast, ast> VarToVal;
+map<functionTree, functionTree> FNodeToItsCopy;
+map<functionTree ,functionTree > CopyToClonedFNode;

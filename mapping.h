@@ -11,8 +11,9 @@
 
 extern map<ast, ast> NodeToItsCopy;
 extern map<ast, ast> CopyToClonedNode;
+extern map<functionTree, functionTree> FNodeToItsCopy;
+extern map<functionTree ,functionTree > CopyToClonedFNode;
 extern map<ast, functionTree> RootToFunction;
 extern map<functionTree, ast> FunctionToRoot;
-extern map<ast, ast> VarToVal;
 
 #endif //FUNC_COMPOSER_MAPPING_H

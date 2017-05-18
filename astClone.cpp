@@ -5,7 +5,8 @@
 #include "mapping.h"
 
 Node* Node::clone(Node* r, Node* p) {
-    Node *n = new Node (p, NodeToItsCopy[root], type, data, nullptr, nullptr);
+    if (r==nullptr) r = NodeToItsCopy[root];
+    Node *n = new Node (p, r, type, data, nullptr, nullptr);
     NodeToItsCopy[this] = n;
     CopyToClonedNode[n] = this;
     if (n->root==nullptr) n->root = n;

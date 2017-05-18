@@ -26,22 +26,18 @@ public:
 
     fNode* clone(fNode* p = nullptr);
 
-    void setvar(string var, fNode* f) {
-        int i=0;
-        while (varlist[i]!=var) i++;
-        vallist[i]=f->clone(this);
-    }
-    void print() {
+    fNode* setvar(string var, fNode* f);
+    void print(ostream &out = cout) {
         if (type=="function") {
-            cout<<name<<"(";
+            out<<name<<"(";
             for (int i=0; i<varlist.size(); i++) {
-                if (vallist[i]!=nullptr) vallist[i]->print();
-                if (i!=vallist.size()-1) cout<<",";
+                if (vallist[i]!=nullptr) vallist[i]->print(out);
+                if (i!=vallist.size()-1) out<<",";
             }
-            cout<<")";
+            out<<")";
         }
         else {
-            cout<<name;
+            out<<name;
         }
     }
     ~fNode() {

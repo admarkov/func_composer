@@ -39,105 +39,92 @@ int main ()
         while (pos<s.length()) expr+=s[pos], pos++;
         fTreesList.push_back(buildAST(TokenStream(expr)));
     }
-    list<ast> statesTrees;
-    list<functionTree> statesFunctions;
+    list<ast> states;
 
     list<fNode*>::iterator f=fList.begin();
     list<Node*>::iterator ftree=fTreesList.begin();
     for (; f!=fList.end(); f++, ftree++) {
         auto F = (*ftree);
         if (F->type=="variable" && (Expr->type=="variable" || Expr->type=="constant")) {
-            statesTrees.push_back(F->clone());
-            statesFunctions.push_back((*f)->clone());
-            RootToFunction[statesTrees.back()]=statesFunctions.back();
-            FunctionToRoot[statesFunctions.back()]=statesTrees.back();
-            statesTrees.back()->setvar(statesTrees.back(), new Node(Expr->data), F->data);
-            statesFunctions.back()->setvar(F->data, new fNode("constant", Expr->data));
-
+            states.push_back(F->clone());
+            states.back() = states.back()->hangTree(new Node(Expr->data));
+            fNode* clonedFunc = (*f)->clone();
+            RootToFunction[states.back()]=clonedFunc;
+            FunctionToRoot[clonedFunc]=states.back();
+            RootToFunction[states.back()]->setvar(F->data, new fNode("constant", Expr->data));
         }
         else {
             if (F->type==Expr->type && F->data==Expr->data) {
-                statesTrees.push_back(F->clone());
-                statesFunctions.push_back((*f)->clone());
-                RootToFunction[statesTrees.back()]=statesFunctions.back();
-                FunctionToRoot[statesFunctions.back()]=statesTrees.back();
+                states.push_back(F->cloneTree());
+                fNode* clonedFunc = (*f)->clone();
+                RootToFunction[states.back()]=clonedFunc;
+                FunctionToRoot[clonedFunc]=states.back();
             }
         }
     }
 
     map<Node*, bool> used;
     used[nullptr] = true;
-    Node*pos = Expr;
+    Node* pos = Expr;
     int it=1;
-    while (pos != nullptr && statesTrees.size()>0) {
+    while (pos != nullptr && states.size()>0) {
         used[pos] = true;
-        list<Node*>::iterator tree = statesTrees.begin();
-        list<fNode*>::iterator func = statesFunctions.begin();
-        int sz=statesTrees.size();
+        list<Node*>::iterator tree = states.begin();
+        int sz=states.size();
         while (sz--) {
             bool del = false;
             if (*tree == nullptr) {
-                tree = statesTrees.erase(tree);
-                func = statesFunctions.erase(func);
+                tree = states.erase(tree);
                 del = true;
             }
             else {
                 if ((*tree)->type != "variable") {
                     if ((*tree)->type != pos->type || (*tree)->data != pos->data) {
-                        tree = statesTrees.erase(tree);
-                        func = statesFunctions.erase(func);
+                        tree = states.erase(tree);
                         del = true;
                     }
                 }
                 else {
-                    f = fList.begin();
-                    ftree = fTreesList.begin();
-                    for (; f != fList.end(); f++, ftree++) {
-                        /*if ((*ftree)->type == "variable") {
-                            if (pos->type == "constant" || pos->type == "variable") {
-                                (*tree)->root->setvar((*tree)->root, pos, (*tree)->data);
-                                (*ftree)
+                    if (pos->type=="variable" || pos->type=="constant") {
+                        (*tree)->root->setvar((*tree)->root, new Node("constant", pos->data), (*tree)->data, new fNode("constant", pos->data));
+                    }
+                    else {
+                        f = fList.begin();
+                        ftree = fTreesList.begin();
+                        for (; f != fList.end(); f++, ftree++) {
+                            if ((*ftree)->type!="variable") {
+                                if (pos->type == (*ftree)->type && pos->data == (*ftree)->data) {
+                                    (*tree)->cloneTree();
+                                    Node *copy = NodeToItsCopy[(*tree)];
+
+                                    fNode *F = RootToFunction[(*tree)->root];
+                                    while (F->parent != nullptr) F = F->parent;
+                                    F->clone();
+
+                                    copy->root->setvar(copy->root, (*ftree), copy->data, *f);
+                                    copy = NodeToItsCopy[(*tree)];
+                                    states.push_back(copy);
+                                }
                             }
                         }
-                        else {*/
-                            if (pos->type==(*ftree)->type && pos->data==(*ftree)->data) {
-                                Node* c = (*tree);
-                                while (c->parent!=nullptr) c = c->parent;
-                                c->clone();
-                                Node* ClonedTree = NodeToItsCopy[(*tree)];
-                                statesTrees.push_back(ClonedTree);
-                                fNode* cf = (*func);
-                                while (cf->parent!=nullptr) cf=cf->parent;
-                                cf->clone();
-                                ClonedTree->setvar(ClonedTree->root, (*ftree), ClonedTree->data);
-
-                                fNode* dbg = RootToFunction[ClonedTree->root];
-                                dbg->setvar(ClonedTree->data, (*f)->clone());
-                                statesFunctions.push_back(dbg);
-//                                RootToFunction[ClonedTree->root]->setvar(ClonedTree->data, (*f)->clone());
-                                ClonedTree = VarToVal[ClonedTree];
-                            }
-                      /* }*/
+                        tree = states.erase(tree);
+                        del=true;
                     }
-                    tree = statesTrees.erase(tree);
-                    func = statesFunctions.erase(func);
-                    del=true;
                 }
             }
             if (!del) {
                 tree++;
-                func++;
             }
         }
 
         if (!used[pos->left]) {
-            for (Node* &n : statesTrees) {
+            for (Node* &n : states) {
                 n = n->left;
             }
             pos = pos->left;
         }
         else if (!used[pos->right]) {
-            for (Node* &n : statesTrees) {
+            for (Node* &n : states) {
                 n = n->right;
             }
             pos = pos->right;
@@ -145,25 +132,34 @@ int main ()
         else {
             pos = pos->parent;
             if (pos!=nullptr)
-                for (Node* &n : statesTrees) {
+                for (Node* &n : states) {
                     n = n->parent;
                 }
         }
 
 
         cout<<it<<":\n";
-        func = statesFunctions.begin();
-        while (func!=statesFunctions.end()) {
-            (*func)->print();
+        list<ast>::iterator state = states.begin();
+        while (state!=states.end()) {
+            fNode* f = RootToFunction[(*state)->root];
+            while (f->parent!=nullptr) f=f->parent;
+            f->print();
             cout<<endl;
-            func++;
+            state++;
         }
         cout<<"--------------------------\n";
         it++;
     }
-    list<Node*>::iterator tree = statesTrees.begin();
-    list<fNode*>::iterator func = statesFunctions.begin();
-    while (tree!=statesTrees.end() && !Node::equal((*tree), Expr)) tree++, func++;
-    if (tree!=statesTrees.end() && Node::equal((*tree), Expr)) (*func)->print();
-    else output<<"Impossible";
+    list<Node*>::iterator tree = states.begin();
+    bool found=false;
+    while (tree!=states.end() && !found) {
+        Node* t = (*tree);
+        while (t->parent!=nullptr) t = t->parent;
+        if (Node::equal(Expr, t)) {
+            RootToFunction[t]->print(output);
+            found=true;
+        }
+        tree++;
+    }
+    if (!found) output<<"Impossible";
 }

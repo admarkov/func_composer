@@ -6,6 +6,10 @@
 
 fNode* fNode::clone(fNode* p) {
     fNode* f = new fNode(type, name, p);
+    FNodeToItsCopy[this] = f;
+    CopyToClonedFNode[f]=this;
+    FunctionToRoot[f] = NodeToItsCopy[FunctionToRoot[this]];
+    RootToFunction[FunctionToRoot[f]] = f;
     for (string v: varlist) {
         f->varlist.push_back(v);
     }
@@ -13,7 +17,5 @@ fNode* fNode::clone(fNode* p) {
         if (val==nullptr) f->vallist.push_back(nullptr);
         else f->vallist.push_back(val->clone(f));
     }
-    FunctionToRoot[f] = NodeToItsCopy[FunctionToRoot[this]];
-    RootToFunction[NodeToItsCopy[FunctionToRoot[this]]] = f;
     return f;
 }

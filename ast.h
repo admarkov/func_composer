@@ -7,6 +7,7 @@
 
 #include <string>
 #include "tokens.h"
+#include "ftree.h"
 
 struct Node {
     Node *parent, *left, *right;
@@ -14,7 +15,21 @@ struct Node {
     string type;
     std::string data;
     Node(Node* p = nullptr, Node* rt=nullptr, string t="", std::string d="", Node* l = nullptr, Node* r = nullptr) : parent(p), type(t), root(rt), data(d), left(l), right(r) {}
+
+    Node(string t, string d, Node*p = nullptr) : parent(p), left(nullptr), right(nullptr), root(nullptr), type(t), data(d) {}
+
     Node* clone(Node* r=nullptr, Node* p = nullptr);
+
+    Node* cloneSubtree(Node* Root=nullptr);
+
+    Node* cloneTree(Node* Root=nullptr) {
+        Node* n = this;
+        while (n->parent!=nullptr) n = n->parent;
+        return n->cloneSubtree();
+    }
+
+    Node* hangTree(Node* Tree);
+
     Node (string c) : type("constant"), data(c) {}
     void del () {
         if (left!=nullptr) left->del();
@@ -32,10 +47,10 @@ struct Node {
         print(r->left, offset+3);
     }
 
-    void setvar(Node* Root, Node *val, string varname);
+    void setvar(Node* Root, Node *val, string varname, fNode* func);
 
     static bool equal(Node* a, Node* b) {
-        if (a->type!=b->type) return false;
+        if (a->type!=b->type && !(a->type=="variable" && b->type=="constant" || b->type=="variable" && a->type=="constant")) return false;
         if (a->data!=b->data) return false;
         if (a->left==nullptr && b->left!=nullptr) return false;
         if (a->left!=nullptr && b->left==nullptr) return false;
