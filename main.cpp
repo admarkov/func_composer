@@ -14,8 +14,8 @@ using namespace std;
 int main ()
 {
     test();
-    fstream input("input");
-    fstream output("output");
+    ifstream input("input");
+    ofstream output("output");
     string e;
     getline(input, e);
     Node* Expr = buildAST(TokenStream(e));
