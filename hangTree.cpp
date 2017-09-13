@@ -6,7 +6,7 @@
 #include "mapping.h"
 
 Node* Node::hangTree(Node* Tree) {
-    Node* r = Tree->cloneTree(r);
+    Node* r = Tree->cloneTree(true);
     r->root = r;
     r->parent = parent;
     if (parent!=nullptr) {
