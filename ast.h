@@ -22,10 +22,11 @@ struct Node {
 
     Node* cloneSubtree(Node* Root=nullptr);
 
-    Node* cloneTree(Node* Root=nullptr) {
+    Node* cloneTree(bool Rooted = false) {
         Node* n = this;
         while (n->parent!=nullptr) n = n->parent;
-        return n->cloneSubtree();
+		if (Rooted) return n->cloneSubtree(n);
+		else return n->cloneSubtree();
     }
 
     Node* hangTree(Node* Tree);
