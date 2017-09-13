@@ -104,7 +104,7 @@ public:
             Token t = get(i);
             if (t.data=="(") brackets++;
             else if (t.data==")") brackets--;
-            else if (brackets==0 && t.type=="operator" && (t.priority()>p || t.priority()==1 && p==1)) {
+            else if (brackets==0 && t.type=="operator" && (p!=1 && t.priority()>=p || t.priority()>p)) {
                 res=i;
                 p=t.priority();
             }
